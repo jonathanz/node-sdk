@@ -40,4 +40,11 @@ export abstract class TransactionBuilder<T> extends BaseBuilder<T> {
     }
     return this;
   }
+
+  public withSecretApiKey(secretApiKey: string) {
+    if (secretApiKey !== undefined) {
+      this.secretApiKey = secretApiKey;
+    }
+    return this;
+  }  
 }

@@ -49,12 +49,12 @@ export class RecurringPaymentMethod extends RecurringEntity<
       customerIdOrPaymentMethod instanceof String
     ) {
       this.paymentType = "Credit Card";
-      this.customerKey = customerIdOrPaymentMethod;
+      this.customerKey = <string> customerIdOrPaymentMethod;
       if (paymentId) {
         this.key = paymentId;
       }
     } else if (customerIdOrPaymentMethod) {
-      this._paymentMethod = customerIdOrPaymentMethod;
+      this._paymentMethod = <IPaymentMethod> customerIdOrPaymentMethod;
     }
   }
 

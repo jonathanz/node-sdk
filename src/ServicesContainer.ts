@@ -21,8 +21,9 @@ export class ServicesContainer {
     return ServicesContainer._instance;
   }
 
-  public static configure(config: ServicesConfig): void {
+  public static configure(config: ServicesConfig): ServicesContainer {
     config.validate();
+    let servicesContainer: ServicesContainer | undefined;
     if (config.merchantId && config.merchantId !== "") {
       const gateway = new RealexConnector();
       gateway.merchantId = config.merchantId;
@@ -35,7 +36,8 @@ export class ServicesContainer {
       gateway.serviceUrl = config.serviceUrl;
       gateway.hostedPaymentConfig = config.hostedPaymentConfig;
       gateway.channel = config.channel;
-      ServicesContainer._instance = new ServicesContainer(gateway, gateway);
+      servicesContainer = new ServicesContainer(gateway, gateway);
+      ServicesContainer._instance = servicesContainer;
     } else {
       const gateway = new PorticoConnector();
       gateway.siteId = config.siteId;
@@ -61,8 +63,10 @@ export class ServicesContainer {
       payplan.timeout = config.timeout;
       payplan.serviceUrl = config.serviceUrl
         + (config.serviceUrl.indexOf('cert.') ? "/Portico.PayPlan.v2/" : "/payplan.v2/");
-      ServicesContainer._instance = new ServicesContainer(gateway, payplan);
+      servicesContainer = new ServicesContainer(gateway, payplan);
+      ServicesContainer._instance = servicesContainer;
     }
+    return servicesContainer;
   }
 
   public constructor(gateway?: IPaymentGateway, recurring?: IRecurringService) {

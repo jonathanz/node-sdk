@@ -63,6 +63,7 @@ export class PorticoConnector extends XmlGateway implements IPaymentGateway {
 
   public processAuthorization(
     builder: AuthorizationBuilder,
+    secretApiKey?: string
   ): Promise<Transaction> {
     // build request
     const transaction = element(this.mapRequestType(builder));
@@ -479,7 +480,7 @@ export class PorticoConnector extends XmlGateway implements IPaymentGateway {
     }
 
     return this.doTransaction(
-      this.buildEnvelope(transaction, builder.clientTransactionId),
+      this.buildEnvelope(transaction, builder.clientTransactionId, secretApiKey || builder.secretApiKey),
     ).then((response) => this.mapResponse(response, builder));
   }
 
@@ -489,7 +490,7 @@ export class PorticoConnector extends XmlGateway implements IPaymentGateway {
     );
   }
 
-  public manageTransaction(builder: ManagementBuilder): Promise<Transaction> {
+  public manageTransaction(builder: ManagementBuilder, secretApiKey?: string): Promise<Transaction> {
     // build request
     const transaction = element(this.mapRequestType(builder));
 
@@ -571,11 +572,11 @@ export class PorticoConnector extends XmlGateway implements IPaymentGateway {
     }
 
     return this.doTransaction(
-      this.buildEnvelope(transaction, builder.clientTransactionId),
+      this.buildEnvelope(transaction, builder.clientTransactionId, secretApiKey || builder.secretApiKey),
     ).then((response) => this.mapResponse(response, builder));
   }
 
-  public processReport<T>(builder: ReportBuilder<T>): Promise<T> {
+  public processReport<T>(builder: ReportBuilder<T>, secretApiKey?: string): Promise<T> {
     const transaction = element(this.mapReportRequestType(builder));
 
     if (builder.timeZoneConversion) {
@@ -607,7 +608,7 @@ export class PorticoConnector extends XmlGateway implements IPaymentGateway {
         subElement(transaction, "TxnId").append(cData(trb.transactionId));
       }
     }
-    return this.doTransaction(this.buildEnvelope(transaction)).then(
+    return this.doTransaction(this.buildEnvelope(transaction, undefined, secretApiKey || builder.secretApiKey)).then(
       (response) => this.mapReportResponse(response, builder),
     );
   }
@@ -615,6 +616,7 @@ export class PorticoConnector extends XmlGateway implements IPaymentGateway {
   protected buildEnvelope(
     transaction: Element,
     clientTransactionId?: string,
+    secretApiKey?: string
   ): string {
     const envelope = element("soap:Envelope", {
       "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/",
@@ -627,8 +629,9 @@ export class PorticoConnector extends XmlGateway implements IPaymentGateway {
 
     // header
     const header = subElement(version1, "Header");
-    if (this.secretApiKey) {
-      subElement(header, "SecretAPIKey").append(cData(this.secretApiKey));
+    secretApiKey = secretApiKey || this.secretApiKey;
+    if (secretApiKey) {
+      subElement(header, "SecretAPIKey").append(cData(secretApiKey));
     }
     if (this.siteId) {
       subElement(header, "SiteId").append(cData(this.siteId));

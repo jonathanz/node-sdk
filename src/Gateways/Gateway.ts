@@ -13,7 +13,7 @@ export abstract class Gateway {
   public constructor(contentType: string) {
     this.contentType = contentType;
     this.headers = {};
-    this.headers["Content-Type"] = contentType;
+    this.headers["Content-Type"] = this.contentType;
   }
 
   public sendRequest(

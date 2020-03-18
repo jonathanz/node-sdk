@@ -14,4 +14,13 @@ export class ReportingService {
       ReportType.TransactionDetail,
     ).withTransactionId(transactionId);
   }
+
+  public static findTransactions(
+    clientTransactionId?: string,
+    transactionId?: string,
+  ): TransactionReportBuilder<TransactionSummary> {
+    return new TransactionReportBuilder<TransactionSummary>(
+      ReportType.FindTransactions,
+    ).withTransactionId(transactionId).withClientTransactionId(clientTransactionId);
+  }
 }

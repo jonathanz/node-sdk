@@ -607,6 +607,11 @@ export class PorticoConnector extends XmlGateway implements IPaymentGateway {
       if (trb.transactionId) {
         subElement(transaction, "TxnId").append(cData(trb.transactionId));
       }
+
+      if (trb.clientTransactionId) {
+        const criteria = subElement(transaction, "Criteria");
+        subElement(criteria, "ClientTxnId").append(cData(trb.clientTransactionId));
+      }      
     }
     return this.doTransaction(this.buildEnvelope(transaction, undefined, secretApiKey || builder.secretApiKey)).then(
       (response) => this.mapReportResponse(response, builder),
@@ -891,6 +896,8 @@ export class PorticoConnector extends XmlGateway implements IPaymentGateway {
         return "ReportActivity";
       case ReportType.TransactionDetail:
         return "ReportTxnDetail";
+      case ReportType.FindTransactions:
+        return "FindTransactions";
       default:
         throw new UnsupportedTransactionError();
     }
@@ -900,6 +907,7 @@ export class PorticoConnector extends XmlGateway implements IPaymentGateway {
     rawResponse: string,
     builder: TransactionBuilder<Transaction>,
   ): Transaction {
+    console.log(rawResponse);
     const result = new Transaction();
     const root = xml(rawResponse).find(".//PosResponse");
     const acceptedCodes = ["00", "0", "85", "10"];
@@ -976,7 +984,6 @@ export class PorticoConnector extends XmlGateway implements IPaymentGateway {
     builder: ReportBuilder<T>,
   ): T {
     // todo: handle non-200 responses
-
     const posResponse = xml(rawResponse).find(".//PosResponse");
     const doc = posResponse.find(`.//${this.mapReportRequestType(builder)}`);
 
@@ -988,6 +995,10 @@ export class PorticoConnector extends XmlGateway implements IPaymentGateway {
         .map(this.hydrateTransactionSummary.bind(this));
     } else if (builder.reportType === ReportType.TransactionDetail) {
       result = this.hydrateTransactionSummary(doc);
+    } else if (builder.reportType === ReportType.FindTransactions) {
+      result = doc
+        .findall(".//Transactions")
+        .map(this.hydrateTransactionSummary.bind(this));
     }
 
     return result;

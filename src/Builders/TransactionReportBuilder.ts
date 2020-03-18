@@ -6,6 +6,7 @@ export class TransactionReportBuilder<T> extends ReportBuilder<T> {
   public endDate: Date;
   public startDate: Date;
   public transactionId: string;
+  public clientTransactionId: string;
 
   public setupValidations() {
     this.validations
@@ -25,6 +26,9 @@ export class TransactionReportBuilder<T> extends ReportBuilder<T> {
       .of("reportType", ReportType.Activity)
       .check("transactionId")
       .isNull();
+
+    //this.validations
+    //  .of("reportType", ReportType.FindTransactions);
   }
 
   public withDeviceId(deviceId?: string) {
@@ -51,6 +55,13 @@ export class TransactionReportBuilder<T> extends ReportBuilder<T> {
   public withTransactionId(transactionId?: string) {
     if (transactionId !== undefined) {
       this.transactionId = transactionId;
+    }
+    return this;
+  }
+
+  public withClientTransactionId(clientTransactionId?: string) {
+    if (clientTransactionId !== undefined) {
+      this.clientTransactionId = clientTransactionId;
     }
     return this;
   }

@@ -43,6 +43,7 @@ import {
   TransactionReference,
   TransactionReportBuilder,
   TransactionSummary,
+  TransactionInfo,
   TransactionType,
   UnsupportedTransactionError,
 } from "../";
@@ -988,7 +989,6 @@ export class PorticoConnector extends XmlGateway implements IPaymentGateway {
     const doc = posResponse.find(`.//${this.mapReportRequestType(builder)}`);
 
     let result: any;
-
     if (builder.reportType === ReportType.Activity) {
       result = doc
         .findall(".//Details")
@@ -998,7 +998,7 @@ export class PorticoConnector extends XmlGateway implements IPaymentGateway {
     } else if (builder.reportType === ReportType.FindTransactions) {
       result = doc
         .findall(".//Transactions")
-        .map(this.hydrateTransactionSummary.bind(this));
+        .map(this.hydrateTransactionInfo.bind(this));
     }
 
     return result;
@@ -1273,9 +1273,11 @@ export class PorticoConnector extends XmlGateway implements IPaymentGateway {
     return trackData;
   }
 
-  protected hydrateTransactionSummary(root: Element): TransactionSummary {
-    const result = new TransactionSummary();
-
+  protected hydrateTransactionSummary(root: Element, result?: TransactionSummary): TransactionSummary {
+    result = result || new TransactionSummary();
+    if(!root) {
+      return result;
+    }
     result.amount = root.findtext(".//Amt");
     result.authorizedAmount = root.findtext(".//AuthAmt");
     result.authCode = root.findtext(".//AuthCode");
@@ -1295,11 +1297,44 @@ export class PorticoConnector extends XmlGateway implements IPaymentGateway {
     result.serviceName = root.findtext(".//ServiceName");
     result.settlementAmount = root.findtext(".//SettlementAmt");
     result.status = root.findtext(".//TxnStatus");
-    result.transactionDate = new Date(root.findtext(".//TxnUtcDT"));
+    const txnUtcDT = root.findtext(".//TxnUtcDT");
+    !!txnUtcDT && (result.transactionDate = new Date());
     result.transactionId = root.findtext(".//GatewayTxnId");
     result.convenienceAmt = root.findtext(".//ConvenienceAmtInfo");
     result.shippingAmt = root.findtext(".//ShippingAmtInfo");
 
+    return result;
+  }
+
+  protected hydrateTransactionInfo(root: Element): TransactionInfo {
+    const result = new TransactionInfo();
+    this.hydrateTransactionSummary(root, result)
+    result.cardType = root.findtext(".//CardType");
+    result.cardSwiped = root.findtext(".//CardSwiped");
+    result.cardHolderFirstName = root.findtext(".//CardHolderFirstName");
+    result.cardHolderLastName = root.findtext(".//CardHolderLastName");
+    result.paymentType = root.findtext(".//PaymentType");
+    result.gratuityAmtInfo = root.findtext(".//GratuityAmtInfo");
+    result.userName = root.findtext(".//UserName");
+    result.responseCode = this.normalizeResponse(
+      root.findtext(".//RspCode"),
+    );
+    result.responseMessage = root.findtext(".//RspText");
+    result.issTxnId = root.findtext(".//IssTxnId");
+    result.batchSeqNbr = root.findtext(".//BatchSeqNbr");
+    result.batchCloseDT = root.findtext(".//BatchCloseDT");
+    result.acctDataSrc = root.findtext(".//AcctDataSrc");
+    result.uniqueDeviceId = root.findtext(".//UniqueDeviceId");
+    result.EMVChipCondition = root.findtext(".//EMVChipCondition");
+    result.hasEMVTag = root.findtext(".//HasEMVTag");
+    result.hasEComPaymentData = root.findtext(".//HasEComPaymentData");
+    result.CAVVResultCode = root.findtext(".//CAVVResultCode");
+    result.tokenPANLast4 = root.findtext(".//TokenPANLast4");
+    result.authenticatedSiteId = root.findtext(".//AuthenticatedSiteId");
+    result.authenticatedDeviceId = root.findtext(".//AuthenticatedDeviceId");
+    result.processedSiteId = root.findtext(".//ProcessedSiteId");
+    result.processedDeviceId = root.findtext(".//ProcessedDeviceId");
+    result.cardBrandTxnId = root.findtext(".//CardBrandTxnId");
     return result;
   }
 }

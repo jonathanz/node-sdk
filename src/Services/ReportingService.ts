@@ -1,4 +1,5 @@
 import { ReportType, TransactionReportBuilder, TransactionSummary } from "../";
+import { Transaction } from "src/Entities";
 
 export class ReportingService {
   public static activity(): TransactionReportBuilder<TransactionSummary[]> {
@@ -18,8 +19,8 @@ export class ReportingService {
   public static findTransactions(
     clientTransactionId?: string,
     transactionId?: string,
-  ): TransactionReportBuilder<TransactionSummary> {
-    return new TransactionReportBuilder<TransactionSummary>(
+  ): TransactionReportBuilder<Transaction> {
+    return new TransactionReportBuilder<Transaction>(
       ReportType.FindTransactions,
     ).withTransactionId(transactionId).withClientTransactionId(clientTransactionId);
   }

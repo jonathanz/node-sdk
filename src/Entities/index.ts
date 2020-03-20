@@ -10,3 +10,4 @@ export * from "./RecurringEntity";
 export * from "./Schedule";
 export * from "./Transaction";
 export * from "./TransactionSummary";
+export * from "./TransactionInfo";

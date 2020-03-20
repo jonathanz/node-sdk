@@ -1,6 +1,14 @@
 import { Validations } from "./BaseBuilder/Validations";
 
 export abstract class BaseBuilder<T> {
+  private _secretApiKey: string;
+  public get secretApiKey(): string {
+    return this._secretApiKey;
+  }
+  public set secretApiKey(value: string) {
+    this._secretApiKey = value;
+  }
+
   protected validations: Validations;
   [key: string]: any;
 
@@ -15,4 +23,10 @@ export abstract class BaseBuilder<T> {
   }
 
   protected abstract setupValidations(): void;
+  public withSecretApiKey(secretApiKey: string) {
+    if (secretApiKey !== undefined) {
+      this.secretApiKey = secretApiKey;
+    }
+    return this;
+  }   
 }

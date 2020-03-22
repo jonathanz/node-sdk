@@ -908,7 +908,6 @@ export class PorticoConnector extends XmlGateway implements IPaymentGateway {
     rawResponse: string,
     builder: TransactionBuilder<Transaction>,
   ): Transaction {
-    console.log(rawResponse);
     const result = new Transaction();
     const root = xml(rawResponse).find(".//PosResponse");
     const acceptedCodes = ["00", "0", "85", "10"];

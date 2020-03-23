@@ -126,7 +126,7 @@ test("001 - add customer person", async (t) => {
   customer.address.postalCode = "98765";
   customer.address.country = "USA";
   customer.workPhone = "5551112222";
-  customer = await customer.create();
+  customer = await customer.create().execute();
 
   t.truthy(customer);
   t.truthy(customer.key);
@@ -148,7 +148,7 @@ test("002 - add customer person", async (t) => {
   customer.address.postalCode = "12345";
   customer.address.country = "USA";
   customer.workPhone = "5551112222";
-  customer = await customer.create();
+  customer = await customer.create().execute();
 
   t.truthy(customer);
   t.truthy(customer.key);
@@ -171,7 +171,7 @@ test("003 - add payment credit visa", async (t) => {
 
   const paymentMethod = await customerPerson
     .addPaymentMethod(getIdentifier("CreditV"), card)
-    .create();
+    .create().execute();
 
   t.truthy(paymentMethod);
   t.truthy(paymentMethod.key);
@@ -192,7 +192,7 @@ test("004 - add payment credit visa", async (t) => {
 
   const paymentMethod = await customerPerson
     .addPaymentMethod(getIdentifier("CreditMC"), card)
-    .create();
+    .create().execute();
 
   t.truthy(paymentMethod);
   t.truthy(paymentMethod.key);
@@ -218,7 +218,7 @@ test("005 - add payment check ppd", async (t) => {
 
   const paymentMethod = await customerPerson
     .addPaymentMethod(getIdentifier("CheckPPD"), check)
-    .create();
+    .create().execute();
 
   t.truthy(paymentMethod);
   t.truthy(paymentMethod.key);
@@ -244,7 +244,7 @@ test("006 - add payment check ccd", async (t) => {
 
   const paymentMethod = await customerBusiness
     .addPaymentMethod(getIdentifier("CheckCCD"), check)
-    .create();
+    .create().execute();
 
   t.truthy(paymentMethod);
   t.truthy(paymentMethod.key);
@@ -268,7 +268,7 @@ test("008 - add schedule credit visa", async (t) => {
     .withReprocessingCount(1)
     .withStatus("Active")
     .withEmailReceipt(EmailReceipt.Never)
-    .create();
+    .create().execute();
 
   t.truthy(schedule);
   t.truthy(schedule.key);
@@ -291,7 +291,7 @@ test("009 - add schedule credit mastercard", async (t) => {
     .withReprocessingCount(2)
     .withStatus("Active")
     .withEmailReceipt(EmailReceipt.Never)
-    .create();
+    .create().execute();
 
   t.truthy(schedule);
   t.truthy(schedule.key);
@@ -314,7 +314,7 @@ test("010 - add schedule check ppd", async (t) => {
     .withNumberOfPayments(2)
     .withStatus("Active")
     .withEmailReceipt(EmailReceipt.Never)
-    .create();
+    .create().execute();
 
   t.truthy(schedule);
   t.truthy(schedule.key);
@@ -336,7 +336,7 @@ test("011 - add schedule check ccd", async (t) => {
     .withReprocessingCount(1)
     .withStatus("Active")
     .withEmailReceipt(EmailReceipt.Never)
-    .create();
+    .create().execute();
 
   t.truthy(schedule);
   t.truthy(schedule.key);

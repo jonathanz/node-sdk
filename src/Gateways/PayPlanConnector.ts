@@ -21,6 +21,7 @@ import {
   StringUtils,
   TransactionType,
   UnsupportedTransactionError,
+  IDictionary,
 } from "../";
 import { RestGateway } from "./RestGateway";
 
@@ -74,6 +75,7 @@ export class PayPlanConnector extends RestGateway implements IRecurringService {
 
   public processRecurring<T extends IRecurringEntity>(
     builder: RecurringBuilder<T>,
+    secretApiKey?: string,
   ): Promise<T> {
     let request = new Object();
     // todo
@@ -110,11 +112,19 @@ export class PayPlanConnector extends RestGateway implements IRecurringService {
 
     this.maybeSetIdentityHeader();
     this.maybeSetIntegrationHeader();
+    let headers = undefined;
+    if(secretApiKey) {
+      console.log('overwrite secretApiKey', secretApiKey);
+      headers = {};
+      this.genAuthorizationHeader(headers, secretApiKey);
+      console.log('overwrite headers', headers);
+    }
 
     return this.doTransaction(
       this.mapMethod(builder.transactionType),
       this.mapUrl(builder),
       JSON.stringify(request),
+      headers,
     ).then((response) => this.mapResponse<T>(builder, response));
   }
 
@@ -637,6 +647,12 @@ export class PayPlanConnector extends RestGateway implements IRecurringService {
       tokenValue: "",
     };
   }
+
+  protected genAuthorizationHeader(headers: IDictionary<string>, value: string) {
+    const buffer = (Buffer.from ? Buffer.from(value) : new Buffer(value));
+    const auth = `Basic ${buffer.toString("base64")}`;
+    headers[RestGateway.AUTHORIZATION_HEADER] = auth;
+  }  
 
   protected setAuthorizationHeader(value: string) {
     const buffer = (Buffer.from ? Buffer.from(value) : new Buffer(value));

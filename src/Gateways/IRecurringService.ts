@@ -5,5 +5,6 @@ export interface IRecurringService {
   supportsUpdatePaymentDetails: boolean;
   processRecurring<T extends IRecurringEntity>(
     builder: RecurringBuilder<T>,
+    secretApiKey?: string,
   ): Promise<T>;
 }

@@ -22,11 +22,11 @@ export class RecurringBuilder<
     }
   }
 
-  public execute(): Promise<T> {
+  public execute(secretApiKey?: string): Promise<T> {
     super.execute();
     return ServicesContainer.instance()
       .getRecurringClient()
-      .processRecurring(this);
+      .processRecurring(this, secretApiKey);
   }
 
   public setupValidations() {

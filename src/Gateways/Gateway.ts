@@ -21,16 +21,18 @@ export abstract class Gateway {
     endpoint: string,
     data?: string,
     queryStringParams?: IDictionary<string>,
+    headers?: IDictionary<string>,
   ) {
     const uri = url.parse(this.serviceUrl);
     const queryString = this.buildQueryString(queryStringParams);
     const options: RequestOptions = {
-      headers: this.headers,
+      headers: Object.assign({}, this.headers, headers),
       host: uri.host,
       method: httpMethod,
       path: uri.path + endpoint + queryString,
       port: uri.port ? parseInt(uri.port, 10) : 443,
     };
+    console.log('sendRequest', headers, this.headers, options.headers);
 
     if (data !== undefined && options && options.headers) {
       options.headers["Content-Length"] = data.length;

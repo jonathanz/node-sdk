@@ -114,10 +114,8 @@ export class PayPlanConnector extends RestGateway implements IRecurringService {
     this.maybeSetIntegrationHeader();
     let headers = undefined;
     if(secretApiKey) {
-      console.log('overwrite secretApiKey', secretApiKey);
       headers = {};
       this.genAuthorizationHeader(headers, secretApiKey);
-      console.log('overwrite headers', headers);
     }
 
     return this.doTransaction(

@@ -32,7 +32,6 @@ export abstract class Gateway {
       path: uri.path + endpoint + queryString,
       port: uri.port ? parseInt(uri.port, 10) : 443,
     };
-    console.log('sendRequest', headers, this.headers, options.headers);
 
     if (data !== undefined && options && options.headers) {
       options.headers["Content-Length"] = data.length;

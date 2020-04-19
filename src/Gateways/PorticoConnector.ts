@@ -46,6 +46,8 @@ import {
   TransactionInfo,
   TransactionType,
   UnsupportedTransactionError,
+  CommonBuilder,
+  Common,
 } from "../";
 import { validateAmount, validateInput } from "../Utils/InputValidation";
 import { XmlGateway } from "./XmlGateway";
@@ -619,6 +621,13 @@ export class PorticoConnector extends XmlGateway implements IPaymentGateway {
     );
   }
 
+  public processCommon<T>(builder: CommonBuilder<T>, secretApiKey?: string): Promise<T> {
+    const transaction = element(this.mapCommonRequestType(builder));
+    return this.doTransaction(this.buildEnvelope(transaction, undefined, secretApiKey || builder.secretApiKey)).then(
+      (response) => this.mapCommonResponse(response, builder),
+    );
+  }
+
   protected buildEnvelope(
     transaction: Element,
     clientTransactionId?: string,
@@ -904,6 +913,15 @@ export class PorticoConnector extends XmlGateway implements IPaymentGateway {
     }
   }
 
+  protected mapCommonRequestType<T>(builder: CommonBuilder<T>): string {
+    switch (builder.transactionType) {
+      case TransactionType.TestCredentials:
+        return "TestCredentials";
+      default:
+        throw new UnsupportedTransactionError();
+    }
+  }
+
   protected mapResponse(
     rawResponse: string,
     builder: TransactionBuilder<Transaction>,
@@ -1000,6 +1018,22 @@ export class PorticoConnector extends XmlGateway implements IPaymentGateway {
         .map(this.hydrateTransactionInfo.bind(this));
     }
 
+    return result;
+  }
+
+  protected mapCommonResponse<T>(
+    rawResponse: string,
+    builder: CommonBuilder<T>,
+  ): T {
+    console.log('rawResponse:', rawResponse);
+    builder;
+    const posResponse = xml(rawResponse).find(".//PosResponse");
+    const doc = posResponse;
+    let result: any = new Common();
+    result.gatewayResponseCode = this.normalizeResponse(
+      doc.findtext(".//GatewayRspCode"),
+    );
+    result.gatewayResponseMessage = doc.findtext(".//GatewayRspMsg");
     return result;
   }
 

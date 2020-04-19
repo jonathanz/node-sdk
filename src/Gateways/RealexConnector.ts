@@ -33,6 +33,7 @@ import {
   TransactionReference,
   TransactionType,
   UnsupportedTransactionError,
+  CommonBuilder,
 } from "../";
 import { XmlGateway } from "./XmlGateway";
 
@@ -459,6 +460,12 @@ export class RealexConnector extends XmlGateway implements IRecurringService {
   public processReport<T>(_builder: ReportBuilder<T>): Promise<T> {
     throw new UnsupportedTransactionError(
       "Reporting functionality is not supported through this gateway.",
+    );
+  }
+
+  public processCommon<T>(_builder: CommonBuilder<T>): Promise<T> {
+    throw new UnsupportedTransactionError(
+      "Common functionality is not supported through this gateway.",
     );
   }
 

@@ -161,6 +161,10 @@ export enum RecurringType {
   Variable,
 }
 
+export enum TransactionType {
+  TestCredentials,
+}
+
 export enum ReportType {
   FindTransactions = 1 << 0,
   Activity = 1 << 1,

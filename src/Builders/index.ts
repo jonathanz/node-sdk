@@ -3,5 +3,7 @@ export * from "./AuthorizationBuilder";
 export * from "./ManagementBuilder";
 export * from "./RecurringBuilder";
 export * from "./ReportBuilder";
+export * from "./CommonBuilder";
 export * from "./TransactionBuilder";
 export * from "./TransactionReportBuilder";
+export * from "./TestCredentialsBuilder";

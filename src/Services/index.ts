@@ -7,3 +7,4 @@ export * from "./GiftService";
 export * from "./HostedService";
 export * from "./RecurringService";
 export * from "./ReportingService";
+export * from "./CommonService";
